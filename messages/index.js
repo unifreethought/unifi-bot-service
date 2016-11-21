@@ -127,7 +127,7 @@ const luis = new builder.IntentDialog({ recognizers: [recognizer] })
         const message = textMessage.message;
 
         session.send(`Okay! ${formattedTime} we will send ${target} "${message}"`);
-        session.endDialog();@unifibot text officers at 3PM “Don’t forget about the officer meeting!”
+        session.endDialog();
       } else {
         session.endDialog();
       }
