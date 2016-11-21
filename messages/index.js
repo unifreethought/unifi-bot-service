@@ -41,9 +41,9 @@ const intents = new builder.IntentDialog()
     session.send("Ok... %s", results.response);
   },
 ])
-.matches(/^@unifibot /i,
-  (session) => {
-    session.message.text = session.message.text.replace(/^@unifibot /i, '');
+.matches(/^@unifibot (.*)$/i, 
+  (session, args) => {
+    session.message.text = args.matched[1];
     const newSession = session.replaceDialog('/luis');
   }
 );
