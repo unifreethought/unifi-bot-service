@@ -30,12 +30,34 @@ const luisAPIHostName = process.env.LuisAPIHostName || 'api.projectoxford.ai';
 
 const luisModelUrl = `https://${luisAPIHostName}/luis/v1/application?id=${luisAppId}&subscription-key=${luisAPIKey}`;
 
-// Main dialog with LUIS
+const intents = new builder.IntentDialog()
+.matches(/^@unifibot help/i, [
+  (session) => {
+    session.send("Hello! I'm the UNIFI Bot. Right now my functions are:\n\n"
+      + '1. Sending text messages (SMS) to groups of users. e.g.: '
+      + 'Text members at 3PM "UNIFI Forum tonight at 6 behind Chat\'s"!');
+  },
+  (session, results) => {
+    session.send("Ok... %s", results.response);
+  },
+])
+.matches(/^@unifibot /i,
+  (session) => {
+    session.message.text = session.message.text.replace(/^@unifibot /i, '');
+    const newSession = session.replaceDialog('/luis');
+  }
+);
+
 const recognizer = new builder.LuisRecognizer(luisModelUrl);
-const intents = new builder.IntentDialog({ recognizers: [recognizer] })
+const luis = new builder.IntentDialog({ recognizers: [recognizer] })
 /*
 .matches('<yourIntent>')... See details at http://docs.botframework.com/builder/node/guides/understanding-natural-language/
 */
+.matches('None', (session) => {
+  session.send("I'm afraid I didn't understand your message, which was \"%s\"",
+    session.message.text);
+  session.endDialog();
+})
 .matches('TextGroup',
     [(session, args, next) => {
         // Resolve and store any entities passed from LUIS.
@@ -51,7 +73,7 @@ const intents = new builder.IntentDialog({ recognizers: [recognizer] })
       if (messageEntity) {
         message = session.message.text.substr(
           messageEntity.startIndex,
-          messageEntity.endIndex - messageEntity.startIndex);
+          1 + (messageEntity.endIndex - messageEntity.startIndex));
       }
 
       const textMessage = session.dialogData.textMessage = {
@@ -105,8 +127,9 @@ const intents = new builder.IntentDialog({ recognizers: [recognizer] })
         const message = textMessage.message;
 
         session.send(`Okay! ${formattedTime} we will send ${target} "${message}"`);
+        session.endDialog();@unifibot text officers at 3PM “Don’t forget about the officer meeting!”
       } else {
-        session.send('Ok... no problem.');
+        session.endDialog();
       }
     }]
 )
@@ -116,7 +139,9 @@ const intents = new builder.IntentDialog({ recognizers: [recognizer] })
     process.version);
 });
 
+
 bot.dialog('/', intents);
+bot.dialog('/luis', luis);
 
 if (useEmulator) {
   const restify = require('restify');
