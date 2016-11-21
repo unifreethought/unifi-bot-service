@@ -88,7 +88,7 @@ const intents = new builder.IntentDialog({ recognizers: [recognizer] })
 
       // Prompt for message (title will be blank if the user said cancel)
       if (textMessage.target && textMessage.time && !textMessage.message) {
-        builder.Prompts.time(session, 'What would you like to send in the message?');
+        builder.Prompts.text(session, 'What would you like to send in the message?');
       } else {
         next();
       }
