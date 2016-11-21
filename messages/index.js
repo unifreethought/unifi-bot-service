@@ -56,7 +56,7 @@ const intents = new builder.IntentDialog({ recognizers: [recognizer] })
 
       const textMessage = session.dialogData.textMessage = {
         target: target ? target.entity : null,
-        time: time ? time[0].ref : null,
+        time: time ? time[0].start.date() : null,
         message: message ? message : null,
       };
 
