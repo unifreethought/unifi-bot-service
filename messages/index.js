@@ -111,7 +111,9 @@ const intents = new builder.IntentDialog({ recognizers: [recognizer] })
     }]
 )
 .onDefault((session) => {
-  session.send('Sorry, I did not understand \'%s\'.', session.message.text);
+  session.send('Sorry, I did not understand \'%s\'. Process version: %s',
+    session.message.text,
+    process.version);
 });
 
 bot.dialog('/', intents);
