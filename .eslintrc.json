@@ -1,7 +1,7 @@
 {
     "extends": "airbnb",
     "parserOptions": {
-        "sourceType": "script"
+        "sourceType": "module"
     },
     "rules": {
         "no-console": 0
