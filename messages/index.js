@@ -10,6 +10,7 @@ const botbuilderAzure = require('botbuilder-azure');
 
 const useEmulator = (process.env.NODE_ENV === 'development');
 const moment = require('moment');
+const chrono = require('chrono-node');
 
 const connector = useEmulator ?
     new builder.ChatConnector() :
@@ -42,8 +43,7 @@ const intents = new builder.IntentDialog({ recognizers: [recognizer] })
       const timeString = builder.EntityRecognizer.findEntity(args.entities, 'TextScheduledTime');
       let time = null;
       if (timeString) {
-        time = builder.EntityRecognizer.recognizeTime(timeString.entity);
-        time = builder.EntityRecognizer.parseTime(timeString.entity);
+        time = chrono.parse(timeString.entity);
       }
 
       const messageEntity = builder.EntityRecognizer.findEntity(args.entities, 'TextMessage');
@@ -56,7 +56,7 @@ const intents = new builder.IntentDialog({ recognizers: [recognizer] })
 
       const textMessage = session.dialogData.textMessage = {
         target: target ? target.entity : null,
-        time: time ? time.resolution.ref : null,
+        time: time ? time[0].ref : null,
         message: message ? message : null,
       };
 

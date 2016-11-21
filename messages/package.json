@@ -6,6 +6,7 @@
   "dependencies": {
     "botbuilder": "^3.4.2",
     "botbuilder-azure": "0.0.1",
+    "chrono-node": "^1.2.5",
     "moment": "^2.16.0"
   },
   "devDependencies": {
