@@ -5,11 +5,7 @@
   "main": "index.js",
   "dependencies": {
     "botbuilder": "^3.4.2",
-    "botbuilder-azure": "0.0.1",
-    "chrono-node": "^1.2.5",
-    "google-spreadsheet": "^2.0.3",
-    "json-stringify-safe": "^5.0.1",
-    "moment": "^2.16.0"
+    "botbuilder-azure": "0.0.1"
   },
   "devDependencies": {
     "eslint": "^3.10.2",

@@ -7,9 +7,10 @@ http://docs.botframework.com/builder/node/guides/understanding-natural-language/
 'use strict';
 const builder = require('botbuilder');
 const botbuilderAzure = require('botbuilder-azure');
-const stringify = require('json-stringify-safe');
 
 const useEmulator = (process.env.NODE_ENV === 'development');
+
+builder.conn
 
 const connector = useEmulator ?
     new builder.ChatConnector() :
@@ -22,13 +23,6 @@ const connector = useEmulator ?
 
 const bot = new builder.UniversalBot(connector);
 
-// Make sure you add code to validate these fields
-const luisAppId = process.env.LuisAppId;
-const luisAPIKey = process.env.LuisAPIKey;
-const luisAPIHostName = process.env.LuisAPIHostName || 'api.projectoxford.ai';
-
-const luisModelUrl = `https://${luisAPIHostName}/luis/v1/application?id=${luisAppId}&subscription-key=${luisAPIKey}`;
-
 const intents = new builder.IntentDialog()
 .matches(/^@unifibot help/i, [
   (session) => {
@@ -39,47 +33,17 @@ const intents = new builder.IntentDialog()
   (session, results) => {
     session.send("Ok... %s", results.response);
   },
-])
-.matches(/^@unifibot debug session/i, [
-  (session) => {
-    console.log(stringify(session));
-  },
-])
-.matches(/^@unifibot (.*)$/i, 
-  (session, args) => {
-    session.message.text = args.matched[1];
-    const newSession = session.replaceDialog('/luis');
-  }
-);
-
-const recognizer = new builder.LuisRecognizer(luisModelUrl);
-const luis = new builder.IntentDialog({ recognizers: [recognizer] })
-/*
-.matches('<yourIntent>')... See details at http://docs.botframework.com/builder/node/guides/understanding-natural-language/
-*/
-.matches('None', (session) => {
-  session.send("I'm afraid I didn't understand your message, which was \"%s\"",
-    session.message.text);
-  session.endDialog();
-})
-.matches('TextGroup', require('./intents/TextGroup'))
-.onDefault((session) => {
-  session.send('Sorry, I did not understand \'%s\'. Process version: %s',
-    session.message.text,
-    process.version);
-});
-
+]);
 
 bot.dialog('/', intents);
-bot.dialog('/luis', luis);
 
 if (useEmulator) {
   const restify = require('restify');
   const server = restify.createServer();
   server.listen(3978, () => {
-    console.log('test bot endpont at http://localhost:3978/api/messages');
+    console.log('test bot endpont at http://localhost:3978/api/plivo-in');
   });
-  server.post('/api/messages', connector.listen());
+  server.post('/api/plivo-in', connector.listen());
 } else {
   module.exports = { default: connector.listen() };
 }
