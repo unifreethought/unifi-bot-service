@@ -42,7 +42,7 @@ const intents = new builder.IntentDialog()
 ])
 .matches(/^@unifibot debug session/i, [
   (session) => {
-    console.log(stringify(session));
+    session.send(stringify(session));
   },
 ])
 .matches(/^@unifibot (.*)$/i, 
