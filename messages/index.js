@@ -29,8 +29,22 @@ const luisAPIHostName = process.env.LuisAPIHostName || 'api.projectoxford.ai';
 
 const luisModelUrl = `https://${luisAPIHostName}/luis/v1/application?id=${luisAppId}&subscription-key=${luisAPIKey}`;
 
+const filterIntent = new builder.IntentDialog()
+.matches(/.*/, [
+  (session) => {
+    const bot = session.message.address.bot;
+    const botName = bot.name || bot.id || 'unifibot';
+    const filter = new RegExp(`^@${botName} (.*)`);
+    const matches = session.message.text.match(filter);
+    if (matches) {
+      session.message.text = matches[1];
+      session.replaceDialog('/basic');
+    }
+  },
+]);
+
 const intents = new builder.IntentDialog()
-.matches(/^@unifibot help/i, [
+.matches(/^help/i, [
   (session) => {
     session.send("Hello! I'm the UNIFI Bot. Right now my functions are:\n\n"
       + '1. Sending text messages (SMS) to groups of users. e.g.: '
@@ -40,15 +54,14 @@ const intents = new builder.IntentDialog()
     session.send("Ok... %s", results.response);
   },
 ])
-.matches(/^@unifibot debug session/i, [
+.matches(/^debug session/i, [
   (session) => {
     session.send(stringify(session));
   },
 ])
-.matches(/^@unifibot (.*)$/i, 
-  (session, args) => {
-    session.message.text = args.matched[1];
-    const newSession = session.replaceDialog('/luis');
+.matches(/.*/,
+  (session) => {
+    session.replaceDialog('/luis');
   }
 );
 
@@ -64,13 +77,11 @@ const luis = new builder.IntentDialog({ recognizers: [recognizer] })
 })
 .matches('TextGroup', require('./intents/TextGroup'))
 .onDefault((session) => {
-  session.send('Sorry, I did not understand \'%s\'. Process version: %s',
-    session.message.text,
-    process.version);
+  session.send('Sorry, I did not understand \'%s\'.', session.message.text);
 });
 
-
-bot.dialog('/', intents);
+bot.dialog('/', filterIntent);
+bot.dialog('/basic', intents);
 bot.dialog('/luis', luis);
 
 if (useEmulator) {
