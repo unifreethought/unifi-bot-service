@@ -1,5 +1,6 @@
 "use strict";
 const PlivoConnector_1 = require("./PlivoConnector");
+const qs = require("qs");
 class PlivoConnectorAzure extends PlivoConnector_1.PlivoConnector {
     constructor(settings) {
         super(settings);
@@ -11,15 +12,7 @@ class PlivoConnectorAzure extends PlivoConnector_1.PlivoConnector {
             _context.log = context.log;
             context.log('Test log on Azure.');
             context.log(`Received request with body ${JSON.stringify(req)}`);
-            if (!req.body) {
-                req.body = {
-                    From: req.query.From,
-                    To: req.query.To,
-                    Text: req.query.Text,
-                    Type: req.query.Type,
-                    MessageUUID: req.query.MessageUUID,
-                };
-            }
+            req.body = qs.parse(req.body);
             context.log("req.query = ", req.query);
             context.log("req.body = ", req.body);
             // Plivo sends all of the arguments as query parameters, and the body is 

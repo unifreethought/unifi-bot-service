@@ -8,6 +8,7 @@
     "botbuilder-azure": "0.0.1",
     "events": "^1.1.1",
     "json-stringify-safe": "^5.0.1",
+    "qs": "^6.3.0",
     "restify": "^4.3.0"
   },
   "devDependencies": {

@@ -1,4 +1,6 @@
 import { PlivoConnector} from './PlivoConnector';
+import * as qs from 'qs';
+
 
 export class PlivoConnectorAzure extends PlivoConnector {
   constructor(settings) {
@@ -13,16 +15,8 @@ export class PlivoConnectorAzure extends PlivoConnector {
         context.log('Test log on Azure.');
         context.log(`Received request with body ${JSON.stringify(req)}`);
 
-        if (!req.body) {
-            req.body = {
-                From: req.query.From,
-                To: req.query.To,
-                Text: req.query.Text,
-                Type: req.query.Type,
-                MessageUUID: req.query.MessageUUID,
-            }
-        }
-
+        req.body = qs.parse(req.body);
+        
         context.log("req.query = ", req.query);
         context.log("req.body = ", req.body);
 
