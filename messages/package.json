@@ -9,7 +9,8 @@
     "chrono-node": "^1.2.5",
     "google-spreadsheet": "^2.0.3",
     "json-stringify-safe": "^5.0.1",
-    "moment": "^2.16.0"
+    "moment": "^2.16.0",
+    "restify": "^4.3.0"
   },
   "devDependencies": {
     "eslint": "^3.10.2",
