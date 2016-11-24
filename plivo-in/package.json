@@ -1,11 +1,14 @@
 {
-  "name": "luisbot",
+  "name": "unifi-bot-service-plivo",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "./lib/index.js",
   "dependencies": {
-    "botbuilder": "^3.4.2",
-    "botbuilder-azure": "0.0.1"
+    "botbuilder": "^3.4.4",
+    "botbuilder-azure": "0.0.1",
+    "events": "^1.1.1",
+    "json-stringify-safe": "^5.0.1",
+    "restify": "^4.3.0"
   },
   "devDependencies": {
     "eslint": "^3.10.2",
@@ -13,12 +16,12 @@
     "eslint-plugin-import": "^2.2.0",
     "eslint-plugin-jsx-a11y": "^3.0.1",
     "eslint-plugin-react": "^6.7.1",
-    "restify": "^4.1.1"
+    "typescript": "^2.2.0-dev.20161123"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
+  "author": "Aaron Friel",
   "license": "ISC",
   "engines": {
     "node": "6.9.1"

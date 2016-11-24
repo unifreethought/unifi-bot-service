@@ -4,4 +4,4 @@ node_modules/
 *.js.map
 
 # .vscode launch files could contain API keys.
-.vscode/launch.json
+**/.vscode/launch.json
