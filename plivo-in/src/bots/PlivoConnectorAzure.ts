@@ -1,6 +1,6 @@
-import { PlivoConnector} from './PlivoConnector';
-import * as qs from 'qs';
+import { PlivoConnector} from "./PlivoConnector";
 
+import * as qs from "qs";
 
 export class PlivoConnectorAzure extends PlivoConnector {
   constructor(settings) {
@@ -8,16 +8,16 @@ export class PlivoConnectorAzure extends PlivoConnector {
   }
 
   public listen() {
-    var _context = { log: (_) => {} };
-    var _listen = super.listen(_context);
-    return function (context, req) {
-        _context.log = context.log;
+    const botCtx = { log: console.log };
+    const superListen = super.listen(botCtx);
+    return (context, req) => {
+        botCtx.log = context.log;
 
         req.body = qs.parse(req.body);
 
-        var response: any = {};
-        _listen(req, <any>{
-            send: function (status, body) {
+        const response: any = {};
+        superListen(req, <any> {
+            send(status, body) {
                 if (context) {
                     response.status = status;
                     if (body) {
@@ -28,19 +28,21 @@ export class PlivoConnectorAzure extends PlivoConnector {
                     context = null;
                 }
             },
-            status: function (val) {
-                if (typeof val === 'number') {
+
+            status(val) {
+                if (typeof val === "number") {
                     response.status = val;
                 }
                 return response.status || 200;
             },
-            end: function () {
+
+            end() {
                 if (context) {
                     context.res = response;
                     context.done();
                     context = null;
                 }
-            }
+            },
         });
     };
   }

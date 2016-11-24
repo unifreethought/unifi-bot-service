@@ -1,16 +1,11 @@
-/*-----------------------------------------------------------------------------
-This template demonstrates how to use an IntentDialog with a LuisRecognizer to add
-natural language support to a bot.
-For a compconste walkthrough of creating this type of bot see the article at
-http://docs.botframework.com/builder/node/guides/understanding-natural-language/
------------------------------------------------------------------------------*/
-'use strict';
-import * as builder from 'botbuilder';
-import { PlivoConnector } from './bots/PlivoConnector';
-import { PlivoConnectorAzure } from './bots/PlivoConnectorAzure';
-// import stringify from 'json-stringify-safe';
+import { PlivoConnector } from "./bots/PlivoConnector";
+import { PlivoConnectorAzure } from "./bots/PlivoConnectorAzure";
 
-const useEmulator = (process.env.NODE_ENV === 'development');
+import * as builder from "botbuilder";
+import * as restify from "restify";
+// import stringify from "json-stringify-safe";
+
+const useEmulator = (process.env.NODE_ENV === "development");
 
 const settings = {
   plivoAuthId: process.env.PlivoAuthID,
@@ -25,37 +20,32 @@ const connector = useEmulator
 const bot = new builder.UniversalBot(connector);
 
 const intents = new builder.IntentDialog()
-.matches(/^@unifibot help/i,
-  (session) => {
-    session.send("Hello! I'm the UNIFI Bot. Right now my functions are:\n\n"
-      + '1. Sending text messages (SMS) to groups of users. e.g.: '
-      + 'Text members at 3PM "UNIFI Forum tonight at 6 behind Chat\'s"!');
+.matches(/^@unifibot help/i, (session) => {
+    session.send("Hello! I\"m the UNIFI Bot. Right now my functions are:\n\n"
+      + "1. Sending text messages (SMS) to groups of users. e.g.: "
+      + "Text members at 3PM \"UNIFI Forum tonight at 6 behind Chat\'s\"!");
 
     session.endDialog();
-  }
-)
-.matches(/^@unifibot echo/,
-  (session, args) => {
+})
+.matches(/^@unifibot echo/, (session, args) => {
     const filter = new RegExp(`^@unifibot echo (.*)`);
     const matches = session.message.text.match(filter);
     if (matches) {
       session.send(matches[1]);
     }
-    
-    session.endDialog();
-  }
-);
 
-bot.dialog('/', intents);
+    session.endDialog();
+});
+
+bot.dialog("/", intents);
 
 if (useEmulator) {
-  const restify = require('restify');
   const server = restify.createServer();
   server.listen(3978, () => {
-    console.log('test bot endpont at http://localhost:3978/api/plivo-in');
+    console.log("test bot endpont at http://localhost:3978/api/plivo-in");
   });
 
-  server.post('/api/plivo-in', connector.listen());
+  server.post("/api/plivo-in", connector.listen());
 } else {
   module.exports = { default: connector.listen() };
 }

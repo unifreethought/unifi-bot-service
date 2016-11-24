@@ -6,14 +6,14 @@ class PlivoConnectorAzure extends PlivoConnector_1.PlivoConnector {
         super(settings);
     }
     listen() {
-        var _context = { log: (_) => { } };
-        var _listen = super.listen(_context);
-        return function (context, req) {
-            _context.log = context.log;
+        const botCtx = { log: console.log };
+        const superListen = super.listen(botCtx);
+        return (context, req) => {
+            botCtx.log = context.log;
             req.body = qs.parse(req.body);
-            var response = {};
-            _listen(req, {
-                send: function (status, body) {
+            const response = {};
+            superListen(req, {
+                send(status, body) {
                     if (context) {
                         response.status = status;
                         if (body) {
@@ -24,19 +24,19 @@ class PlivoConnectorAzure extends PlivoConnector_1.PlivoConnector {
                         context = null;
                     }
                 },
-                status: function (val) {
-                    if (typeof val === 'number') {
+                status(val) {
+                    if (typeof val === "number") {
                         response.status = val;
                     }
                     return response.status || 200;
                 },
-                end: function () {
+                end() {
                     if (context) {
                         context.res = response;
                         context.done();
                         context = null;
                     }
-                }
+                },
             });
         };
     }

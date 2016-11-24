@@ -3,7 +3,7 @@
     "target": "es2015",
     "module": "commonjs",
     "sourceMap": true,
-    "outDir": "../lib",
+    "outDir": "lib",
     "allowJs": true,
     "watch": true
   },
@@ -11,5 +11,8 @@
   "exclude": [
     "node_modules",
     "lib"
+  ],
+  "include": [
+    "src"
   ]
 }

@@ -30,11 +30,10 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
+import { IConnector, IEvent, IMessage } from "botbuilder";
 
-import { IConnector, IEvent, IMessage } from 'botbuilder';
-// import * as utils from '../utils';
-import * as request from 'request';
-import * as async from 'async';
+import * as async from "async";
+import * as request from "request";
 
 export interface IContext {
     log(message?: any, ...optionalParams: any[]): void;
@@ -50,11 +49,11 @@ export class PlivoConnector implements IConnector {
             if (req.body) {
                 this.handlePlivoRequest(context, req, res);
             } else {
-                var requestData = '';
-                req.on('data', (chunk: string) => {
+                let requestData = "";
+                req.on("data", (chunk: string) => {
                     requestData += chunk;
                 });
-                req.on('end', () => {
+                req.on("end", () => {
                     req.body = JSON.parse(requestData);
                     this.handlePlivoRequest(context, req, res);
                 });
@@ -65,22 +64,22 @@ export class PlivoConnector implements IConnector {
     public send(messages: IMessage[], done: (err: Error) => void): void {
         async.eachSeries(messages, (msg, cb) => {
             try {
-                var reqUrl = `https://api.plivo.com/v1/Account/${this.settings.plivoAuthId}/Message/`;
+                const reqUrl = `https://api.plivo.com/v1/Account/${this.settings.plivoAuthId}/Message/`;
 
-                var auth: request.AuthOptions = {
-                    user: this.settings.plivoAuthId,
+                const auth: request.AuthOptions = {
                     pass: this.settings.plivoAuthToken,
+                    user: this.settings.plivoAuthId,
                 };
 
-                var options: request.CoreOptions = {
+                const options: request.CoreOptions = {
                     json: {
-                        src: this.settings.plivoNumber,
                         dst: msg.address.user.id,
-                        text: msg.text,
-                        type: 'sms',
                         log: true,
+                        src: this.settings.plivoNumber,
+                        text: msg.text,
+                        type: "sms",
                     },
-                    auth: auth,
+                    auth,
                 };
 
                 request.post(reqUrl, options, (err, response, body) => {
@@ -96,15 +95,19 @@ export class PlivoConnector implements IConnector {
     }
 
     public startConversation(address: IAddress, done: (err: Error, address?: IAddress) => void): void {
-        var adr = clone(address);
+        const adr = clone(address);
 
         if (address && address.bot && address.bot.id && address.user && address.user.id) {
             adr.conversation = { id: `${address.bot.id}-${address.user.id}` };
         } else {
-            adr.conversation = { id: 'sms' }
+            adr.conversation = { id: "sms" };
         }
 
         done(null, adr);
+    }
+
+    public onEvent(handler: (events: IEvent[], cb?: (err: Error) => void) => void): void {
+        this.handler = handler;
     }
 
     private handlePlivoRequest(context: IContext, req: IWebRequest, res: IWebResponse): void {
@@ -113,32 +116,28 @@ export class PlivoConnector implements IConnector {
         // Plivo doesn't use JWT, so we defer authentication to the listener.
         // In the case of Azure Functions, use a Function Key / API Key.
 
-        var plivoMsg = <IPlivoMessage>req.body;
+        const plivoMsg = <IPlivoMessage> req.body;
 
-        var message: IMessage = <any>({
-            type: 'message',
-            text: plivoMsg.Text,
-            timestamp: (new Date()).toISOString(),
-            sourceEvent: { id: plivoMsg.MessageUUID },
-            attachments: [],
-            entities: [],
+        const message: IMessage = <any> ({
             address: {
-                channelId: 'sms',
                 bot: { id: plivoMsg.To },
+                channelId: "sms",
                 conversation: { id: `${plivoMsg.From}-${plivoMsg.To}` },
                 user: { id: plivoMsg.From },
             },
-            source: 'sms',
+            attachments: [],
+            entities: [],
+            source: "sms",
+            sourceEvent: { id: plivoMsg.MessageUUID },
+            text: plivoMsg.Text,
+            timestamp: (new Date()).toISOString(),
+            type: "message",
         });
 
         this.handler([message]);
 
         res.status(200);
         res.end();
-    }
-
-    public onEvent(handler: (events: IEvent[], cb?: (err: Error) => void) => void): void {
-        this.handler = handler;
     }
 }
 
@@ -179,9 +178,9 @@ export interface IWebMiddleware {
 }
 
 function clone(obj: any): any {
-    var cpy: any = {};
+    const cpy: any = {};
     if (obj) {
-        for (var key in obj) {
+        for (const key in obj) {
             if (obj.hasOwnProperty(key)) {
                 cpy[key] = obj[key];
             }
