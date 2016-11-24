@@ -22,7 +22,7 @@ const connector = useEmulator ?
 
 const bot = new builder.UniversalBot(connector);
 
-// Make sure you add code to validate these fields
+// TODO: Add code to validate these fields
 const luisAppId = process.env.LuisAppId;
 const luisAPIKey = process.env.LuisAPIKey;
 const luisAPIHostName = process.env.LuisAPIHostName || 'api.projectoxford.ai';
@@ -67,15 +67,12 @@ const intents = new builder.IntentDialog()
 
 const recognizer = new builder.LuisRecognizer(luisModelUrl);
 const luis = new builder.IntentDialog({ recognizers: [recognizer] })
-/*
-.matches('<yourIntent>')... See details at http://docs.botframework.com/builder/node/guides/understanding-natural-language/
-*/
+.matches('TextGroup', require('./intents/TextGroup'))
 .matches('None', (session) => {
   session.send("I'm afraid I didn't understand your message, which was \"%s\"",
     session.message.text);
   session.endDialog();
 })
-.matches('TextGroup', require('./intents/TextGroup'))
 .onDefault((session) => {
   session.send('Sorry, I did not understand \'%s\'.', session.message.text);
 });
