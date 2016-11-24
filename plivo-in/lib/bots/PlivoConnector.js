@@ -38,10 +38,10 @@ class PlivoConnector {
     constructor(settings) {
         this.settings = settings;
     }
-    listen() {
+    listen(logger = console.log) {
         return (req, res) => {
             if (req.body) {
-                this.handlePlivoRequest(req, res);
+                this.handlePlivoRequest(req, res, logger);
             }
             else {
                 var requestData = '';
@@ -49,8 +49,9 @@ class PlivoConnector {
                     requestData += chunk;
                 });
                 req.on('end', () => {
+                    logger(`Received request with raw body: ${requestData}`);
                     req.body = JSON.parse(requestData);
-                    this.handlePlivoRequest(req, res);
+                    this.handlePlivoRequest(req, res, logger);
                 });
             }
         };
@@ -95,10 +96,11 @@ class PlivoConnector {
         }
         done(null, adr);
     }
-    handlePlivoRequest(req, res) {
+    handlePlivoRequest(req, res, logger) {
         // In case future authentication code is added, add it here.
         // Plivo doesn't use JWT, so we defer authentication to the listener.
         // In the case of Azure Functions, use a Function Key / API Key.
+        logger(`Request body, parsed: ${JSON.stringify(req.body)}`);
         var plivoMsg = req.body;
         var message = ({
             type: 'message',

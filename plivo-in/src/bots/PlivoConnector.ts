@@ -36,23 +36,28 @@ import { IConnector, IEvent, IMessage } from 'botbuilder';
 import * as request from 'request';
 import * as async from 'async';
 
+export interface IConnectorLogger {
+    (message: string): void;
+}
+
 export class PlivoConnector implements IConnector {
     private handler: (events: IEvent[], cb?: (err: Error) => void) => void;
 
     constructor(private settings: IPlivoConnectorSettings) { }
 
-    public listen(): IWebMiddleware {
+    public listen(logger: IConnectorLogger = console.log): IWebMiddleware {
         return (req: IWebRequest, res: IWebResponse) => {
             if (req.body) {
-                this.handlePlivoRequest(req, res);
+                this.handlePlivoRequest(req, res, logger);
             } else {
                 var requestData = '';
                 req.on('data', (chunk: string) => {
                     requestData += chunk;
                 });
                 req.on('end', () => {
+                    logger(`Received request with raw body: ${requestData}`);
                     req.body = JSON.parse(requestData);
-                    this.handlePlivoRequest(req, res);
+                    this.handlePlivoRequest(req, res, logger);
                 });
             }
         };
@@ -103,11 +108,14 @@ export class PlivoConnector implements IConnector {
         done(null, adr);
     }
 
-    private handlePlivoRequest(req: IWebRequest, res: IWebResponse): void {
+    private handlePlivoRequest(req: IWebRequest, res: IWebResponse, logger: IConnectorLogger): void {
         // In case future authentication code is added, add it here.
 
         // Plivo doesn't use JWT, so we defer authentication to the listener.
         // In the case of Azure Functions, use a Function Key / API Key.
+
+        logger(`Request body, parsed: ${JSON.stringify(req.body)}`);
+
         var plivoMsg = <IPlivoMessage>req.body;
 
         var message: IMessage = <any>({

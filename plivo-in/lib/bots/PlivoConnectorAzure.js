@@ -5,10 +5,10 @@ class PlivoConnectorAzure extends PlivoConnector_1.PlivoConnector {
         super(settings);
     }
     listen() {
-        var _listen = super.listen();
+        var _listen = super.listen;
         return function (context, req) {
             var response = {};
-            _listen(req, {
+            _listen(context.log)(req, {
                 send: function (status, body) {
                     if (context) {
                         response.status = status;
