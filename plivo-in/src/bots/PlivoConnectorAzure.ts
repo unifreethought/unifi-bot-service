@@ -6,10 +6,12 @@ export class PlivoConnectorAzure extends PlivoConnector {
   }
 
   public listen() {
-    var _listen = super.listen;
+    var logger = console.log;
+    var _listen = super.listen(logger);
     return function (context, req) {
+        logger = context.log;
         var response: any = {};
-        _listen(context.log)(req, <any>{
+        _listen(req, <any>{
             send: function (status, body) {
                 if (context) {
                     response.status = status;

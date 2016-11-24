@@ -32,44 +32,41 @@
 //
 "use strict";
 // import * as utils from '../utils';
-var request = require("request");
-var async = require("async");
-var PlivoConnector = (function () {
-    function PlivoConnector(settings) {
+const request = require("request");
+const async = require("async");
+class PlivoConnector {
+    constructor(settings) {
         this.settings = settings;
     }
-    PlivoConnector.prototype.listen = function (logger) {
-        var _this = this;
-        if (logger === void 0) { logger = console.log; }
-        return function (req, res) {
+    listen(logger = console.log) {
+        return (req, res) => {
             if (req.body) {
-                _this.handlePlivoRequest(req, res, logger);
+                this.handlePlivoRequest(req, res, logger);
             }
             else {
                 var requestData = '';
-                req.on('data', function (chunk) {
+                req.on('data', (chunk) => {
                     requestData += chunk;
                 });
-                req.on('end', function () {
-                    logger("Received request with raw body: " + requestData);
+                req.on('end', () => {
+                    logger(`Received request with raw body: ${requestData}`);
                     req.body = JSON.parse(requestData);
-                    _this.handlePlivoRequest(req, res, logger);
+                    this.handlePlivoRequest(req, res, logger);
                 });
             }
         };
-    };
-    PlivoConnector.prototype.send = function (messages, done) {
-        var _this = this;
-        async.eachSeries(messages, function (msg, cb) {
+    }
+    send(messages, done) {
+        async.eachSeries(messages, (msg, cb) => {
             try {
-                var reqUrl = "https://api.plivo.com/v1/Account/" + _this.settings.plivoAuthId + "/Message/";
+                var reqUrl = `https://api.plivo.com/v1/Account/${this.settings.plivoAuthId}/Message/`;
                 var auth = {
-                    user: _this.settings.plivoAuthId,
-                    pass: _this.settings.plivoAuthToken,
+                    user: this.settings.plivoAuthId,
+                    pass: this.settings.plivoAuthToken,
                 };
                 var options = {
                     json: {
-                        src: _this.settings.plivoNumber,
+                        src: this.settings.plivoNumber,
                         dst: msg.address.user.id,
                         text: msg.text,
                         type: 'sms',
@@ -77,9 +74,9 @@ var PlivoConnector = (function () {
                     },
                     auth: auth,
                 };
-                request.post(reqUrl, options, function (err, response, body) {
+                request.post(reqUrl, options, (err, response, body) => {
                     if (!err && response.statusCode >= 400) {
-                        err = new Error("Unable to send message over Plivo to " + options.json.dst);
+                        err = new Error(`Unable to send message over Plivo to ${options.json.dst}`);
                     }
                     cb(err);
                 });
@@ -88,22 +85,22 @@ var PlivoConnector = (function () {
                 cb(e);
             }
         }, done);
-    };
-    PlivoConnector.prototype.startConversation = function (address, done) {
+    }
+    startConversation(address, done) {
         var adr = clone(address);
         if (address && address.bot && address.bot.id && address.user && address.user.id) {
-            adr.conversation = { id: address.bot.id + "-" + address.user.id };
+            adr.conversation = { id: `${address.bot.id}-${address.user.id}` };
         }
         else {
             adr.conversation = { id: 'sms' };
         }
         done(null, adr);
-    };
-    PlivoConnector.prototype.handlePlivoRequest = function (req, res, logger) {
+    }
+    handlePlivoRequest(req, res, logger) {
         // In case future authentication code is added, add it here.
         // Plivo doesn't use JWT, so we defer authentication to the listener.
         // In the case of Azure Functions, use a Function Key / API Key.
-        logger("Request body, parsed: " + JSON.stringify(req.body));
+        logger(`Request body, parsed: ${JSON.stringify(req.body)}`);
         var plivoMsg = req.body;
         var message = ({
             type: 'message',
@@ -115,7 +112,7 @@ var PlivoConnector = (function () {
             address: {
                 channelId: 'sms',
                 bot: { id: plivoMsg.To },
-                conversation: { id: plivoMsg.From + "-" + plivoMsg.To },
+                conversation: { id: `${plivoMsg.From}-${plivoMsg.To}` },
                 user: { id: plivoMsg.From },
             },
             source: 'sms',
@@ -123,12 +120,11 @@ var PlivoConnector = (function () {
         this.handler([message]);
         res.status(200);
         res.end();
-    };
-    PlivoConnector.prototype.onEvent = function (handler) {
+    }
+    onEvent(handler) {
         this.handler = handler;
-    };
-    return PlivoConnector;
-}());
+    }
+}
 exports.PlivoConnector = PlivoConnector;
 function clone(obj) {
     var cpy = {};
