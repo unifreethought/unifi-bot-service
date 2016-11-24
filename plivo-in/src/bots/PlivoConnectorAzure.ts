@@ -12,7 +12,17 @@ export class PlivoConnectorAzure extends PlivoConnector {
         _context.log = context.log;
         context.log('Test log on Azure.');
         context.log(`Received request with body ${JSON.stringify(req)}`);
-        
+
+        if (!req.body) {
+            req.body = {
+                From: req.query.From,
+                To: req.query.To,
+                Text: req.query.Text,
+                Type: req.query.Type,
+                MessageUUID: req.query.MessageUUID,
+            }
+        }
+
         context.log("req.query = ", req.query);
         context.log("req.body = ", req.body);
 
