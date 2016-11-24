@@ -56,11 +56,12 @@ const intents = new builder.IntentDialog()
     session.send(stringify(session));
   },
 ])
-.matches(/.*/,
-  (session) => {
-    session.replaceDialog('/luis');
-  }
-);
+.matches(/^echo (.*)/, (session, args) => {
+  session.send(args.matched[1]);
+})
+.matches(/.*/, (session) => {
+  session.replaceDialog('/luis');
+});
 
 const recognizer = new builder.LuisRecognizer(luisModelUrl);
 const luis = new builder.IntentDialog({ recognizers: [recognizer] })

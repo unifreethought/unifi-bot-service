@@ -48,6 +48,9 @@ const intents = new builder.IntentDialog()
         session.send(json_stringify_safe_1.default(session));
     },
 ])
+    .matches(/^echo (.*)/, (session, args) => {
+    session.send(args.matched[1]);
+})
     .matches(/.*/, (session) => {
     session.replaceDialog('/luis');
 });
