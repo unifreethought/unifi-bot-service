@@ -5,17 +5,22 @@ For a compconste walkthrough of creating this type of bot see the article at
 http://docs.botframework.com/builder/node/guides/understanding-natural-language/
 -----------------------------------------------------------------------------*/
 'use strict';
-const builder = require('botbuilder');
-const plivo = require('./bots/PlivoConnector');
-const stringify = require('json-stringify-safe');
+import * as builder from 'botbuilder';
+import { PlivoConnector } from './bots/PlivoConnector';
+import { PlivoConnectorAzure } from './bots/PlivoConnectorAzure';
+// import stringify from 'json-stringify-safe';
 
 const useEmulator = (process.env.NODE_ENV === 'development');
 
-const connector = new plivo.PlivoConnector({
+const settings = {
   plivoAuthId: process.env.PlivoAuthID,
   plivoAuthToken: process.env.PlivoAuthToken,
   plivoNumber: process.env.PlivoNumber,
-});
+};
+
+const connector = useEmulator
+  ? new PlivoConnector(settings)
+  : new PlivoConnectorAzure(settings);
 
 const bot = new builder.UniversalBot(connector);
 

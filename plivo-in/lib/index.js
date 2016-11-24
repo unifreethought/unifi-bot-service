@@ -5,15 +5,19 @@ For a compconste walkthrough of creating this type of bot see the article at
 http://docs.botframework.com/builder/node/guides/understanding-natural-language/
 -----------------------------------------------------------------------------*/
 'use strict';
-const builder = require('botbuilder');
-const plivo = require('./bots/PlivoConnector');
-const stringify = require('json-stringify-safe');
+const builder = require("botbuilder");
+const PlivoConnector_1 = require("./bots/PlivoConnector");
+const PlivoConnectorAzure_1 = require("./bots/PlivoConnectorAzure");
+// import stringify from 'json-stringify-safe';
 const useEmulator = (process.env.NODE_ENV === 'development');
-const connector = new plivo.PlivoConnector({
+const settings = {
     plivoAuthId: process.env.PlivoAuthID,
     plivoAuthToken: process.env.PlivoAuthToken,
     plivoNumber: process.env.PlivoNumber,
-});
+};
+const connector = useEmulator
+    ? new PlivoConnector_1.PlivoConnector(settings)
+    : new PlivoConnectorAzure_1.PlivoConnectorAzure(settings);
 const bot = new builder.UniversalBot(connector);
 const intents = new builder.IntentDialog()
     .matches(/^@unifibot help/i, [
