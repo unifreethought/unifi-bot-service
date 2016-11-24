@@ -37,7 +37,7 @@ import * as request from 'request';
 import * as async from 'async';
 
 export interface IContext {
-    log(message: string): void;
+    log(message?: any, ...optionalParams: any[]): void;
 }
 
 export class PlivoConnector implements IConnector {

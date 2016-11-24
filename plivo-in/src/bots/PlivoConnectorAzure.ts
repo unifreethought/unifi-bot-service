@@ -12,6 +12,12 @@ export class PlivoConnectorAzure extends PlivoConnector {
         _context.log = context.log;
         context.log('Test log on Azure.');
         context.log(`Received request with body ${JSON.stringify(req)}`);
+        
+        context.log("req.query = ", req.query);
+        context.log("req.body = ", req.body);
+
+        // Plivo sends all of the arguments as query parameters, and the body is 
+
         var response: any = {};
         _listen(req, <any>{
             send: function (status, body) {
