@@ -55,7 +55,6 @@ export class PlivoConnector implements IConnector {
                     requestData += chunk;
                 });
                 req.on('end', () => {
-                    context.log(`Received request with raw body: ${requestData}`);
                     req.body = JSON.parse(requestData);
                     this.handlePlivoRequest(context, req, res);
                 });
@@ -113,8 +112,6 @@ export class PlivoConnector implements IConnector {
 
         // Plivo doesn't use JWT, so we defer authentication to the listener.
         // In the case of Azure Functions, use a Function Key / API Key.
-
-        context.log(`Request body, parsed: ${JSON.stringify(req.body)}`);
 
         var plivoMsg = <IPlivoMessage>req.body;
 

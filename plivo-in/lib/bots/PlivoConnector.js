@@ -49,7 +49,6 @@ class PlivoConnector {
                     requestData += chunk;
                 });
                 req.on('end', () => {
-                    context.log(`Received request with raw body: ${requestData}`);
                     req.body = JSON.parse(requestData);
                     this.handlePlivoRequest(context, req, res);
                 });
@@ -100,7 +99,6 @@ class PlivoConnector {
         // In case future authentication code is added, add it here.
         // Plivo doesn't use JWT, so we defer authentication to the listener.
         // In the case of Azure Functions, use a Function Key / API Key.
-        context.log(`Request body, parsed: ${JSON.stringify(req.body)}`);
         var plivoMsg = req.body;
         var message = ({
             type: 'message',
