@@ -10,9 +10,11 @@ export class PlivoConnectorAzure extends PlivoConnector {
     var _listen = super.listen(logger);
     return function (context, req) {
         logger = context.log;
+        context.log('Test log on Azure.');
         var response: any = {};
         _listen(req, <any>{
             send: function (status, body) {
+                context.log(`Received request with body ${JSON.stringify(body)}`);
                 if (context) {
                     response.status = status;
                     if (body) {
