@@ -1,11 +1,17 @@
 "use strict";
-const PlivoConnector_1 = require("./PlivoConnector");
-class PlivoConnectorAzure extends PlivoConnector_1.PlivoConnector {
-    constructor(settings) {
-        super(settings);
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
+var PlivoConnector_1 = require("./PlivoConnector");
+var PlivoConnectorAzure = (function (_super) {
+    __extends(PlivoConnectorAzure, _super);
+    function PlivoConnectorAzure(settings) {
+        return _super.call(this, settings) || this;
     }
-    listen() {
-        var _listen = super.listen;
+    PlivoConnectorAzure.prototype.listen = function () {
+        var _listen = _super.prototype.listen;
         return function (context, req) {
             var response = {};
             _listen(context.log)(req, {
@@ -35,7 +41,8 @@ class PlivoConnectorAzure extends PlivoConnector_1.PlivoConnector {
                 }
             });
         };
-    }
-}
+    };
+    return PlivoConnectorAzure;
+}(PlivoConnector_1.PlivoConnector));
 exports.PlivoConnectorAzure = PlivoConnectorAzure;
 //# sourceMappingURL=PlivoConnectorAzure.js.map
