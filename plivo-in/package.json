@@ -9,7 +9,7 @@
     "events": "^1.1.1",
     "json-stringify-safe": "^5.0.1",
     "qs": "^6.3.0",
-    "restify": "^4.3.0",
+    "restify": "^4.3.0"
   },
   "devDependencies": {
     "eslint": "^3.10.2",

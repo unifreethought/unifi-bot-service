@@ -17,7 +17,9 @@
     "eslint-plugin-import": "^2.2.0",
     "eslint-plugin-jsx-a11y": "^3.0.1",
     "eslint-plugin-react": "^6.7.1",
-    "restify": "^4.1.1"
+    "restify": "^4.1.1",
+    "tslint": "^4.0.2",
+    "typescript": "^2.2.0-dev.20161123"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

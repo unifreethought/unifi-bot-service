@@ -1,8 +1,9 @@
-const builder = require('botbuilder');
-const moment = require('moment');
-const chrono = require('chrono-node');
+import * as builder from 'botbuilder';
 
-const intent = [(session, args, next) => {
+import * as chrono from 'chrono-node';
+import * as moment from 'moment';
+
+export const intents = [(session, args, next) => {
   // Resolve and store any entities passed from LUIS.
   const target = builder.EntityRecognizer.findEntity(args.entities, 'TextTarget');
   const timeString = builder.EntityRecognizer.findEntity(args.entities, 'TextScheduledTime');
@@ -20,9 +21,9 @@ const intent = [(session, args, next) => {
   }
 
   const textMessage = session.dialogData.textMessage = {
+    message: message ? message : null,
     target: target ? target.entity : null,
     time: time ? time[0].start.date() : null,
-    message: message ? message : null,
   };
 
   // Prompt for target
@@ -75,5 +76,3 @@ const intent = [(session, args, next) => {
     session.endDialog();
   }
 }];
-
-module.exports = intent;
