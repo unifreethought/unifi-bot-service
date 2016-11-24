@@ -36,8 +36,8 @@ import { IConnector, IEvent, IMessage } from 'botbuilder';
 import * as request from 'request';
 import * as async from 'async';
 
-export interface IConnectorLogger {
-    (message: string): void;
+export interface IContext {
+    log(message: string): void;
 }
 
 export class PlivoConnector implements IConnector {
@@ -45,19 +45,19 @@ export class PlivoConnector implements IConnector {
 
     constructor(private settings: IPlivoConnectorSettings) { }
 
-    public listen(logger: IConnectorLogger = console.log): IWebMiddleware {
+    public listen(context: IContext = { log: console.log }): IWebMiddleware {
         return (req: IWebRequest, res: IWebResponse) => {
             if (req.body) {
-                this.handlePlivoRequest(req, res, logger);
+                this.handlePlivoRequest(context, req, res);
             } else {
                 var requestData = '';
                 req.on('data', (chunk: string) => {
                     requestData += chunk;
                 });
                 req.on('end', () => {
-                    logger(`Received request with raw body: ${requestData}`);
+                    context.log(`Received request with raw body: ${requestData}`);
                     req.body = JSON.parse(requestData);
-                    this.handlePlivoRequest(req, res, logger);
+                    this.handlePlivoRequest(context, req, res);
                 });
             }
         };
@@ -108,13 +108,13 @@ export class PlivoConnector implements IConnector {
         done(null, adr);
     }
 
-    private handlePlivoRequest(req: IWebRequest, res: IWebResponse, logger: IConnectorLogger): void {
+    private handlePlivoRequest(context: IContext, req: IWebRequest, res: IWebResponse): void {
         // In case future authentication code is added, add it here.
 
         // Plivo doesn't use JWT, so we defer authentication to the listener.
         // In the case of Azure Functions, use a Function Key / API Key.
 
-        logger(`Request body, parsed: ${JSON.stringify(req.body)}`);
+        context.log(`Request body, parsed: ${JSON.stringify(req.body)}`);
 
         var plivoMsg = <IPlivoMessage>req.body;
 
