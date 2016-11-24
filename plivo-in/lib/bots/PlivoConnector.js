@@ -116,6 +116,8 @@ class PlivoConnector {
             source: 'sms',
         });
         this.handler([message]);
+        res.status(200);
+        res.end();
     }
     onEvent(handler) {
         this.handler = handler;

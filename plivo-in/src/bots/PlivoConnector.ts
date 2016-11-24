@@ -127,6 +127,9 @@ export class PlivoConnector implements IConnector {
         });
 
         this.handler([message]);
+
+        res.status(200);
+        res.end();
     }
 
     public onEvent(handler: (events: IEvent[], cb?: (err: Error) => void) => void): void {
