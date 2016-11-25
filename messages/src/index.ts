@@ -6,7 +6,7 @@ import { UnifiConnectorAzure } from './bots/UnifiConnectorAzure';
 import * as builder from 'botbuilder';
 import * as botbuilderAzure from 'botbuilder-azure';
 
-import stringify from 'json-stringify-safe';
+import * as stringify from 'json-stringify-safe';
 import * as restify from 'restify';
 
 const useEmulator = (process.env.NODE_ENV === 'development');
@@ -63,7 +63,7 @@ const intents = new builder.IntentDialog()
     session.send('Ok... %s', results.response);
   },
 ])
-.matches(/^debug address/i, [
+.matches(/^debug address$/i, [
   (session) => {
     session.send(stringify(session.message.address));
   },

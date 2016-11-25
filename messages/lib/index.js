@@ -3,7 +3,7 @@ const Intents = require("./intents");
 const UnifiConnector_1 = require("./bots/UnifiConnector");
 const UnifiConnectorAzure_1 = require("./bots/UnifiConnectorAzure");
 const builder = require("botbuilder");
-const json_stringify_safe_1 = require("json-stringify-safe");
+const stringify = require("json-stringify-safe");
 const restify = require("restify");
 const useEmulator = (process.env.NODE_ENV === 'development');
 const settings = {
@@ -53,9 +53,9 @@ const intents = new builder.IntentDialog()
         session.send('Ok... %s', results.response);
     },
 ])
-    .matches(/^debug address/i, [
+    .matches(/^debug address$/i, [
     (session) => {
-        session.send(json_stringify_safe_1.default(session.message.address));
+        session.send(stringify(session.message.address));
     },
 ])
     .matches(/^echo (.*)/, (session, args) => {
