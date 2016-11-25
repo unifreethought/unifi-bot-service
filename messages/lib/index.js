@@ -1,18 +1,28 @@
 "use strict";
 const Intents = require("./intents");
+const UnifiConnector_1 = require("./bots/UnifiConnector");
+const UnifiConnectorAzure_1 = require("./bots/UnifiConnectorAzure");
 const builder = require("botbuilder");
-const botbuilderAzure = require("botbuilder-azure");
 const json_stringify_safe_1 = require("json-stringify-safe");
 const restify = require("restify");
 const useEmulator = (process.env.NODE_ENV === 'development');
-const connector = useEmulator ?
-    new builder.ChatConnector() :
-    new botbuilderAzure.BotServiceConnector({
+const settings = {
+    chatSettings: {
         appId: process.env.MicrosoftAppId,
         appPassword: process.env.MicrosoftAppPassword,
         openIdMetadata: process.env.BotOpenIdMetadata,
         stateEndpoint: process.env.BotStateEndpoint,
-    });
+    },
+    connectedTo: UnifiConnector_1.ConnectionType.BotService,
+    plivoSettings: {
+        plivoAuthId: process.env.PlivoAuthID,
+        plivoAuthToken: process.env.PlivoAuthToken,
+        plivoNumber: process.env.PlivoNumber,
+    },
+};
+const connector = useEmulator ?
+    new UnifiConnector_1.UnifiConnector(settings) :
+    new UnifiConnectorAzure_1.UnifiConnectorAzure(settings);
 const universalBot = new builder.UniversalBot(connector);
 // TODO: Add code to validate these fields
 const luisAppId = process.env.LuisAppId;
@@ -43,9 +53,9 @@ const intents = new builder.IntentDialog()
         session.send('Ok... %s', results.response);
     },
 ])
-    .matches(/^debug session/i, [
+    .matches(/^debug address/i, [
     (session) => {
-        session.send(json_stringify_safe_1.default(session));
+        session.send(json_stringify_safe_1.default(session.message.address));
     },
 ])
     .matches(/^echo (.*)/, (session, args) => {

@@ -1,5 +1,8 @@
 import * as Intents from './intents';
 
+import { ConnectionType, IUnifiConnectorSettings, UnifiConnector } from './bots/UnifiConnector';
+import { UnifiConnectorAzure } from './bots/UnifiConnectorAzure';
+
 import * as builder from 'botbuilder';
 import * as botbuilderAzure from 'botbuilder-azure';
 
@@ -7,15 +10,24 @@ import stringify from 'json-stringify-safe';
 import * as restify from 'restify';
 
 const useEmulator = (process.env.NODE_ENV === 'development');
-
-const connector = useEmulator ?
-    new builder.ChatConnector() :
-    new botbuilderAzure.BotServiceConnector(<any> {
+const settings: IUnifiConnectorSettings = {
+  chatSettings: <any> {
       appId: process.env.MicrosoftAppId,
       appPassword: process.env.MicrosoftAppPassword,
       openIdMetadata: process.env.BotOpenIdMetadata,
       stateEndpoint: process.env.BotStateEndpoint,
-    });
+  },
+  connectedTo: ConnectionType.BotService,
+  plivoSettings: {
+    plivoAuthId: process.env.PlivoAuthID,
+    plivoAuthToken: process.env.PlivoAuthToken,
+    plivoNumber: process.env.PlivoNumber,
+  },
+};
+
+const connector = useEmulator ?
+    new UnifiConnector(settings) :
+    new UnifiConnectorAzure(settings);
 
 const universalBot = new builder.UniversalBot(connector);
 
@@ -51,9 +63,9 @@ const intents = new builder.IntentDialog()
     session.send('Ok... %s', results.response);
   },
 ])
-.matches(/^debug session/i, [
+.matches(/^debug address/i, [
   (session) => {
-    session.send(stringify(session));
+    session.send(stringify(session.message.address));
   },
 ])
 .matches(/^echo (.*)/, (session, args) => {
@@ -84,7 +96,7 @@ if (useEmulator) {
   server.listen(3978, () => {
     console.log('test bot endpont at http://localhost:3978/api/messages');
   });
-  server.post('/api/messages', connector.listen());
+  server.post('/api/messages', <any> connector.listen());
 } else {
   module.exports = { default: connector.listen() };
 }
