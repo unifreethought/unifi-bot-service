@@ -1,7 +1,7 @@
 "use strict";
-const PlivoConnector_1 = require("./PlivoConnector");
+const UnifiConnector_1 = require("./UnifiConnector");
 const qs = require("qs");
-class PlivoConnectorAzure extends PlivoConnector_1.PlivoConnector {
+class UnifiConnectorAzure extends UnifiConnector_1.UnifiConnector {
     constructor(settings) {
         super(settings);
     }
@@ -10,7 +10,16 @@ class PlivoConnectorAzure extends PlivoConnector_1.PlivoConnector {
         const superListen = super.listen(botCtx);
         return (context, req) => {
             botCtx.log = context.log;
-            req.body = qs.parse(req.body);
+            switch (this.unifiSettings.connectedTo) {
+                case UnifiConnector_1.ConnectionType.BotService:
+                    break;
+                case UnifiConnector_1.ConnectionType.Plivo:
+                    // Plivo sends requests querystring formatted in the body.
+                    req.body = qs.parse(req.body);
+                    break;
+                default:
+                    break;
+            }
             const response = {};
             superListen(req, {
                 send(status, body) {
@@ -25,7 +34,7 @@ class PlivoConnectorAzure extends PlivoConnector_1.PlivoConnector {
                     }
                 },
                 status(val) {
-                    if (typeof val === "number") {
+                    if (typeof val === 'number') {
                         response.status = val;
                     }
                     return response.status || 200;
@@ -41,5 +50,5 @@ class PlivoConnectorAzure extends PlivoConnector_1.PlivoConnector {
         };
     }
 }
-exports.PlivoConnectorAzure = PlivoConnectorAzure;
-//# sourceMappingURL=PlivoConnectorAzure.js.map
+exports.UnifiConnectorAzure = UnifiConnectorAzure;
+//# sourceMappingURL=UnifiConnectorAzure.js.map

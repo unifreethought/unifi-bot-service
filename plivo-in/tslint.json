@@ -1,6 +1,7 @@
 {
 	"extends": "tslint:latest",
 	"rules": {
-		"no-console": [true, "error"]
+		"no-console": [true, "error"],
+		"quotemark": [true, "single", "avoid-escape"]
 	}
 }

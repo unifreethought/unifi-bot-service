@@ -1,18 +1,27 @@
 "use strict";
-const PlivoConnector_1 = require("./bots/PlivoConnector");
-const PlivoConnectorAzure_1 = require("./bots/PlivoConnectorAzure");
+const UnifiConnector_1 = require("./bots/UnifiConnector");
+const UnifiConnectorAzure_1 = require("./bots/UnifiConnectorAzure");
 const builder = require("botbuilder");
 const restify = require("restify");
 // import stringify from "json-stringify-safe";
 const useEmulator = (process.env.NODE_ENV === "development");
 const settings = {
-    plivoAuthId: process.env.PlivoAuthID,
-    plivoAuthToken: process.env.PlivoAuthToken,
-    plivoNumber: process.env.PlivoNumber,
+    chatSettings: {
+        appId: process.env.MicrosoftAppId,
+        appPassword: process.env.MicrosoftAppPassword,
+        openIdMetadata: process.env.BotOpenIdMetadata,
+        stateEndpoint: process.env.BotStateEndpoint,
+    },
+    connectedTo: UnifiConnector_1.ConnectionType.Plivo,
+    plivoSettings: {
+        plivoAuthId: process.env.PlivoAuthID,
+        plivoAuthToken: process.env.PlivoAuthToken,
+        plivoNumber: process.env.PlivoNumber,
+    },
 };
 const connector = useEmulator
-    ? new PlivoConnector_1.PlivoConnector(settings)
-    : new PlivoConnectorAzure_1.PlivoConnectorAzure(settings);
+    ? new UnifiConnector_1.UnifiConnector(settings)
+    : new UnifiConnectorAzure_1.UnifiConnectorAzure(settings);
 const bot = new builder.UniversalBot(connector);
 const intents = new builder.IntentDialog()
     .matches(/^@unifibot help/i, (session) => {
@@ -40,4 +49,16 @@ if (useEmulator) {
 else {
     module.exports = { default: connector.listen() };
 }
+/*
+POST http://localhost:3978/api/plivo-in
+
+{
+    "From": "13196545167",
+    "To": "13192149770",
+    "Type": "sms",
+    "Text": "@unifibot echo hey Natalie this is Friel via the UNIFI bot, try replying with @unifibot help",
+    "MessageUUID": "undefined"
+}
+
+*/
 //# sourceMappingURL=index.js.map
