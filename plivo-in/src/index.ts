@@ -44,6 +44,12 @@ const intents = new builder.IntentDialog()
     }
 
     session.endDialog();
+})
+.onDefault((session) => {
+  const message = new builder.Message()
+    .address(JSON.parse(process.env.SlackAddress))
+    .text(session.message.text);
+  bot.send(message);
 });
 
 bot.dialog("/", intents);
@@ -59,15 +65,3 @@ if (useEmulator) {
   module.exports = { default: connector.listen() };
 }
 
-/*
-POST http://localhost:3978/api/plivo-in
-
-{
-    "From": "13196545167",
-    "To": "13192149770",
-    "Type": "sms",
-    "Text": "@unifibot echo hey Natalie this is Friel via the UNIFI bot, try replying with @unifibot help",
-    "MessageUUID": "undefined"
-}
-
-*/

@@ -56,7 +56,7 @@ export class UnifiConnector extends ChatConnector {
 
             // key is a string here, e.g.: "0", and we double-lookup to convert
             // from the string to the name associated with it, to the number.
-            switch (ConnectionType[ConnectionType[key]]) {
+            switch (<any> ConnectionType[ConnectionType[key]]) {
                 case ConnectionType.BotService:
                     super.send(messages, done);
                     break;
