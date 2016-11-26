@@ -16,8 +16,9 @@ class UnifiConnectorAzure extends UnifiConnector_1.UnifiConnector {
                     break;
                 case UnifiConnector_1.ConnectionType.Plivo:
                     // Plivo sends requests querystring formatted in the body.
+                    context.log('Plivo request raw body: ', req.body);
                     req.body = qs.parse(req.body);
-                    context.log('Plivo request coming in, body: ', req.body);
+                    context.log('Plivo request body: ', req.body);
                     break;
                 default:
                     break;
