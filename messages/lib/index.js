@@ -23,12 +23,12 @@ const settings = {
 if (useEmulator) {
     const server = restify.createServer();
     server.listen(3978, () => {
-        console.log("test bot endpont at http://localhost:3978/api/messages");
+        console.log('test bot endpont at http://localhost:3978/api/messages');
     });
     let context = { log: console.log };
     let connector = new UnifiConnector_1.UnifiConnector(settings, context);
     let bot = makeBot(connector);
-    server.post("/api/messages", connector.listen());
+    server.post('/api/messages', connector.listen());
 }
 else {
     module.exports = (context, req) => {
