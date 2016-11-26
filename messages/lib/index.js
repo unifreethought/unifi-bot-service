@@ -38,7 +38,9 @@ else {
     };
 }
 function makeBot(connector) {
-    const bot = new builder.UniversalBot(connector);
+    const bot = new builder.UniversalBot(connector, {
+        persistConversationData: true,
+    });
     // TODO: Add code to validate these fields
     const luisAppId = process.env.LuisAppId;
     const luisAPIKey = process.env.LuisAPIKey;
@@ -56,25 +58,28 @@ function makeBot(connector) {
                 session.replaceDialog('/basic');
             }
         },
-    ]);
+    ])
+        .onDefault((session) => {
+        session.endDialog();
+    });
     const intents = new builder.IntentDialog()
         .matches(/^help/i, [
         (session) => {
             session.send("Hello! I'm the UNIFI Bot. Right now my functions are:\n\n"
                 + '1. Sending text messages (SMS) to groups of users. e.g.: '
                 + 'Text members at 3PM "UNIFI Forum tonight at 6 behind Chat\'s"!');
-        },
-        (session, results) => {
-            session.send('Ok... %s', results.response);
+            session.endDialog();
         },
     ])
         .matches(/^debug address$/i, [
         (session) => {
             session.send(stringify(session.message.address));
+            session.endDialog();
         },
     ])
         .matches(/^echo (.*)/, (session, args) => {
         session.send(args.matched[1]);
+        session.endDialog();
     })
         .matches(/.*/, (session) => {
         session.replaceDialog('/luis');
@@ -82,10 +87,6 @@ function makeBot(connector) {
     const recognizer = new builder.LuisRecognizer(luisModelUrl);
     const luis = new builder.IntentDialog({ recognizers: [recognizer] })
         .matches('TextGroup', Intents.TextGroup)
-        .matches('None', (session) => {
-        session.send("I'm afraid I didn't understand your message, which was \"%s\"", session.message.text);
-        session.endDialog();
-    })
         .onDefault((session) => {
         session.send('Sorry, I did not understand \'%s\'.', session.message.text);
         session.endDialog();

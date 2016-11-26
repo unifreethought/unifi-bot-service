@@ -54,8 +54,8 @@ export class UnifiConnector extends ChatConnector {
         });
 
         _.each(grouped, (value, key) => {
-            console.log('key = ', key);
-            console.log('value = ', value);
+            // console.log('key = ', key);
+            // console.log('value = ', value);
 
             // key is a string here, e.g.: "0", and we double-lookup to convert
             // from the string to the name associated with it, to the number.
