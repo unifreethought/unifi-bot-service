@@ -42,7 +42,7 @@ const intents = new builder.IntentDialog()
         .text(session.message.text);
     bot.send(message);
 });
-bot.on('trigger');
+
 bot.dialog("/", intents);
 if (useEmulator) {
     const server = restify.createServer();
