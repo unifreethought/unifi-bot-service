@@ -15,7 +15,7 @@ export class UnifiConnectorAzure extends UnifiConnector {
 
       case ConnectionType.Plivo:
         // Plivo sends requests querystring formatted in the body.
-        this.context.log('Plivo request raw body: ', req.body);
+        _context.log('Plivo request raw body: ', req.body);
         req.body = qs.parse(req.body);
         this.context.log('Plivo request body: ', req.body);
         break;
@@ -24,6 +24,7 @@ export class UnifiConnectorAzure extends UnifiConnector {
         break;
     }
 
+    const _context = this.context;
     const response: any = {};
     (super.listen())(req, <any> {
       send(status, body) {
@@ -31,8 +32,8 @@ export class UnifiConnectorAzure extends UnifiConnector {
         if (body) {
           response.body = body;
         }
-        this.context.res = response;
-        this.context.done();
+        _context.res = response;
+        _context.done();
       },
 
       status(val) {
@@ -43,8 +44,8 @@ export class UnifiConnectorAzure extends UnifiConnector {
       },
 
       end() {
-        this.context.res = response;
-        this.context.done();
+        _context.res = response;
+        _context.done();
       },
     });
   }
