@@ -1,10 +1,12 @@
-import { IAddress, IConnector, IEvent, IMessage } from "botbuilder";
-import { ChatConnector, IChatConnectorSettings } from "botbuilder";
+import { IAddress, IConnector, IEvent, IMessage } from 'botbuilder';
+import { ChatConnector, IChatConnectorSettings } from 'botbuilder';
 
-import * as async from "async";
-import * as request from "request";
+import * as async from 'async';
+import * as request from 'request';
 
-import * as _ from "lodash";
+import * as _ from 'lodash';
+
+const PlivoChannelId: string = 'sms';
 
 export interface IContext {
     log(message?: any, ...optionalParams: any[]): void;
@@ -13,11 +15,12 @@ export interface IContext {
 export class UnifiConnector extends ChatConnector {
     private handler: (events: IEvent[], cb?: (err: Error) => void) => void;
 
-    constructor(protected unifiSettings: IUnifiConnectorSettings) {
+    constructor(protected unifiSettings: IUnifiConnectorSettings,
+                protected context: IContext) {
         super(unifiSettings.chatSettings);
     }
 
-    public listen(context: IContext = { log: console.log }): IWebMiddleware {
+    public listen(): IWebMiddleware {
         switch (this.unifiSettings.connectedTo) {
             case ConnectionType.BotService:
                 return super.listen();
@@ -25,26 +28,26 @@ export class UnifiConnector extends ChatConnector {
             case ConnectionType.Plivo:
                 return (req: IWebRequest, res: IWebResponse) => {
                     if (req.body) {
-                        this.handlePlivoRequest(context, req, res);
+                        this.handlePlivoRequest(req, res);
                     } else {
-                        let requestData = "";
-                        req.on("data", (chunk: string) => {
+                        let requestData = '';
+                        req.on('data', (chunk: string) => {
                             requestData += chunk;
                         });
-                        req.on("end", () => {
+                        req.on('end', () => {
                             req.body = JSON.parse(requestData);
-                            this.handlePlivoRequest(context, req, res);
+                            this.handlePlivoRequest(req, res);
                         });
                     }
                 };
 
             default:
-                throw new Error("No connection type specified.");
+                throw new Error('No connection type specified.');
         }
     }
 
     public send(messages: IMessage[], done: (err: Error) => void): void {
-        const plivoMessages = messages.filter((msg) => msg.address.channelId === "Plivo");
+        const plivoMessages = messages.filter((msg) => msg.address.channelId === PlivoChannelId);
 
         const grouped = _.groupBy(<_.List<IMessage>> messages, (msg) => {
             return channelIdToType(msg.address.channelId);
@@ -56,7 +59,7 @@ export class UnifiConnector extends ChatConnector {
 
             // key is a string here, e.g.: "0", and we double-lookup to convert
             // from the string to the name associated with it, to the number.
-            switch (ConnectionType[ConnectionType[key]]) {
+            switch (<any> ConnectionType[ConnectionType[key]]) {
                 case ConnectionType.BotService:
                     super.send(messages, done);
                     break;
@@ -78,7 +81,7 @@ export class UnifiConnector extends ChatConnector {
                                     log: true,
                                     src: plivoSettings.plivoNumber,
                                     text: msg.text,
-                                    type: "sms",
+                                    type: 'sms',
                                 },
                                 auth,
                             };
@@ -96,7 +99,7 @@ export class UnifiConnector extends ChatConnector {
                     break;
 
                 default:
-                    done(new Error("No connection type specified."));
+                    done(new Error('No connection type specified.'));
             }
         });
 
@@ -114,14 +117,14 @@ export class UnifiConnector extends ChatConnector {
                 if (address && address.bot && address.bot.id && address.user && address.user.id) {
                     adr.conversation = { id: `${address.bot.id}-${address.user.id}` };
                 } else {
-                    adr.conversation = { id: "plivo" };
+                    adr.conversation = { id: 'plivo' };
                 }
 
                 done(null, adr);
                 break;
 
             default:
-                done(new Error("No connection type specified"), address);
+                done(new Error('No connection type specified'), address);
         }
     }
 
@@ -129,7 +132,7 @@ export class UnifiConnector extends ChatConnector {
         this.handler = handler;
     }
 
-    private handlePlivoRequest(context: IContext, req: IWebRequest, res: IWebResponse): void {
+    private handlePlivoRequest(req: IWebRequest, res: IWebResponse): void {
         // In case future authentication code is added, add it here.
 
         // Plivo doesn't use JWT, so we defer authentication to the listener.
@@ -140,17 +143,17 @@ export class UnifiConnector extends ChatConnector {
         const message: IMessage = <any> ({
             address: {
                 bot: { id: plivoMsg.To },
-                channelId: "plivo",
+                channelId: PlivoChannelId,
                 conversation: { id: `${plivoMsg.From}-${plivoMsg.To}` },
                 user: { id: plivoMsg.From },
             },
             attachments: [],
             entities: [],
-            source: "plivo",
+            source: 'plivo',
             sourceEvent: { id: plivoMsg.MessageUUID },
             text: plivoMsg.Text,
             timestamp: (new Date()).toISOString(),
-            type: "message",
+            type: 'message',
         });
 
         this.handler([message]);
@@ -163,7 +166,7 @@ export class UnifiConnector extends ChatConnector {
 interface IPlivoMessage {
     From: string;
     To: string;
-    Type: "sms";
+    Type: 'sms';
     Text: string;
     MessageUUID: string;
 }
@@ -175,11 +178,15 @@ export enum ConnectionType {
 
 export function channelIdToType(channelId: string): ConnectionType {
     switch (channelId) {
-        case "plivo":
+        case PlivoChannelId:
             return ConnectionType.Plivo;
         default:
             return ConnectionType.BotService;
     }
+}
+
+export interface IContext {
+    log(message?: any, ...optionalParams: any[]): void;
 }
 
 export interface IPlivoConnectorSettings {

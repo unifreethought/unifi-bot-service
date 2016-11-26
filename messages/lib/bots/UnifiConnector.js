@@ -3,37 +3,39 @@ const botbuilder_1 = require("botbuilder");
 const async = require("async");
 const request = require("request");
 const _ = require("lodash");
+const PlivoChannelId = 'sms';
 class UnifiConnector extends botbuilder_1.ChatConnector {
-    constructor(unifiSettings) {
+    constructor(unifiSettings, context) {
         super(unifiSettings.chatSettings);
         this.unifiSettings = unifiSettings;
+        this.context = context;
     }
-    listen(context = { log: console.log }) {
+    listen() {
         switch (this.unifiSettings.connectedTo) {
             case ConnectionType.BotService:
                 return super.listen();
             case ConnectionType.Plivo:
                 return (req, res) => {
                     if (req.body) {
-                        this.handlePlivoRequest(context, req, res);
+                        this.handlePlivoRequest(req, res);
                     }
                     else {
-                        let requestData = "";
-                        req.on("data", (chunk) => {
+                        let requestData = '';
+                        req.on('data', (chunk) => {
                             requestData += chunk;
                         });
-                        req.on("end", () => {
+                        req.on('end', () => {
                             req.body = JSON.parse(requestData);
-                            this.handlePlivoRequest(context, req, res);
+                            this.handlePlivoRequest(req, res);
                         });
                     }
                 };
             default:
-                throw new Error("No connection type specified.");
+                throw new Error('No connection type specified.');
         }
     }
     send(messages, done) {
-        const plivoMessages = messages.filter((msg) => msg.address.channelId === "Plivo");
+        const plivoMessages = messages.filter((msg) => msg.address.channelId === PlivoChannelId);
         const grouped = _.groupBy(messages, (msg) => {
             return channelIdToType(msg.address.channelId);
         });
@@ -61,7 +63,7 @@ class UnifiConnector extends botbuilder_1.ChatConnector {
                                     log: true,
                                     src: plivoSettings.plivoNumber,
                                     text: msg.text,
-                                    type: "sms",
+                                    type: 'sms',
                                 },
                                 auth,
                             };
@@ -78,7 +80,7 @@ class UnifiConnector extends botbuilder_1.ChatConnector {
                     }, done);
                     break;
                 default:
-                    done(new Error("No connection type specified."));
+                    done(new Error('No connection type specified.'));
             }
         });
     }
@@ -93,18 +95,18 @@ class UnifiConnector extends botbuilder_1.ChatConnector {
                     adr.conversation = { id: `${address.bot.id}-${address.user.id}` };
                 }
                 else {
-                    adr.conversation = { id: "plivo" };
+                    adr.conversation = { id: 'plivo' };
                 }
                 done(null, adr);
                 break;
             default:
-                done(new Error("No connection type specified"), address);
+                done(new Error('No connection type specified'), address);
         }
     }
     onEvent(handler) {
         this.handler = handler;
     }
-    handlePlivoRequest(context, req, res) {
+    handlePlivoRequest(req, res) {
         // In case future authentication code is added, add it here.
         // Plivo doesn't use JWT, so we defer authentication to the listener.
         // In the case of Azure Functions, use a Function Key / API Key.
@@ -112,17 +114,17 @@ class UnifiConnector extends botbuilder_1.ChatConnector {
         const message = ({
             address: {
                 bot: { id: plivoMsg.To },
-                channelId: "plivo",
+                channelId: PlivoChannelId,
                 conversation: { id: `${plivoMsg.From}-${plivoMsg.To}` },
                 user: { id: plivoMsg.From },
             },
             attachments: [],
             entities: [],
-            source: "plivo",
+            source: 'plivo',
             sourceEvent: { id: plivoMsg.MessageUUID },
             text: plivoMsg.Text,
             timestamp: (new Date()).toISOString(),
-            type: "message",
+            type: 'message',
         });
         this.handler([message]);
         res.status(200);
@@ -137,7 +139,7 @@ var ConnectionType;
 })(ConnectionType = exports.ConnectionType || (exports.ConnectionType = {}));
 function channelIdToType(channelId) {
     switch (channelId) {
-        case "plivo":
+        case PlivoChannelId:
             return ConnectionType.Plivo;
         default:
             return ConnectionType.BotService;

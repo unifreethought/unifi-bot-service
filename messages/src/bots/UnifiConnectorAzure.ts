@@ -1,60 +1,51 @@
-import { ConnectionType, IUnifiConnectorSettings, UnifiConnector } from './UnifiConnector';
+import { ConnectionType, IContext, IUnifiConnectorSettings, UnifiConnector } from './UnifiConnector';
 
 import * as qs from 'qs';
 
 export class UnifiConnectorAzure extends UnifiConnector {
-  constructor(settings: IUnifiConnectorSettings) {
-    super(settings);
+
+  constructor(settings: IUnifiConnectorSettings, context: IContext) {
+    super(settings, context);
   }
 
-  public listen() {
-    const botCtx = { log: console.log };
-    const superListen = super.listen(botCtx);
-    return (context, req) => {
-      botCtx.log = context.log;
+  public listenAzure(req) {
+    switch (this.unifiSettings.connectedTo) {
+      case ConnectionType.BotService:
+        break;
 
-      switch (this.unifiSettings.connectedTo) {
-        case ConnectionType.BotService:
-          break;
+      case ConnectionType.Plivo:
+        // Plivo sends requests querystring formatted in the body.
+        this.context.log('Plivo request raw body: ', req.body);
+        req.body = qs.parse(req.body);
+        this.context.log('Plivo request body: ', req.body);
+        break;
 
-        case ConnectionType.Plivo:
-          // Plivo sends requests querystring formatted in the body.
-          req.body = qs.parse(req.body);
-          break;
+      default:
+        break;
+    }
 
-        default:
-          break;
-      }
+    const response: any = {};
+    (super.listen())(req, <any> {
+      send(status, body) {
+        response.status = status;
+        if (body) {
+          response.body = body;
+        }
+        this.context.res = response;
+        this.context.done();
+      },
 
-      const response: any = {};
-      superListen(req, <any>{
-        send(status, body) {
-          if (context) {
-            response.status = status;
-            if (body) {
-              response.body = body;
-            }
-            context.res = response;
-            context.done();
-            context = null;
-          }
-        },
+      status(val) {
+        if (typeof val === 'number') {
+          response.status = val;
+        }
+        return response.status || 200;
+      },
 
-        status(val) {
-          if (typeof val === 'number') {
-            response.status = val;
-          }
-          return response.status || 200;
-        },
-
-        end() {
-          if (context) {
-            context.res = response;
-            context.done();
-            context = null;
-          }
-        },
-      });
-    };
+      end() {
+        this.context.res = response;
+        this.context.done();
+      },
+    });
   }
 }
