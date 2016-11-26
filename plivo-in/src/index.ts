@@ -37,10 +37,10 @@ if (useEmulator) {
   server.post("/api/plivo-in", connector.listen());
 } else {
   module.exports = (context, req) => {
-      let connector = new UnifiConnectorAzure(settings, context);
-      let bot = makeBot(connector);
+    let connector = new UnifiConnectorAzure(settings, context);
+    let bot = makeBot(connector);
 
-      connector.listenAzure(req);
+    connector.listenAzure(req);
   };
 }
 
@@ -63,7 +63,7 @@ function makeBot(connector: IConnector): UniversalBot {
     .onDefault((session) => {
       const message = new builder.Message()
         .address(JSON.parse(process.env.SlackAddress))
-        .text(session.message.text);
+        .text(`Text from ${session.message.address.user.id}: ${session.message.text}`);
       bot.send(message);
     });
 

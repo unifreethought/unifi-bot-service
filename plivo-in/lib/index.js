@@ -54,7 +54,7 @@ function makeBot(connector) {
         .onDefault((session) => {
         const message = new builder.Message()
             .address(JSON.parse(process.env.SlackAddress))
-            .text(session.message.text);
+            .text(`Text from ${session.message.address.user.id}: ${session.message.text}`);
         bot.send(message);
     });
     bot.dialog("/", intents);
