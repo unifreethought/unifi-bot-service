@@ -49,10 +49,10 @@ function makeBot(connector) {
     const filterIntent = new builder.IntentDialog()
         .matches(/.*/, [
         (session) => {
-            connector.log('In filter dialog');
             const botAdr = session.message.address.bot;
             const botName = botAdr.name || botAdr.id || 'unifibot';
             const filter = new RegExp(`^@${botName} (.*)`);
+            connector.log(`In filter dialog, attempting to match filter ${filter} to ${session.message.text}`);
             const matches = session.message.text.match(filter);
             if (matches) {
                 connector.log('Matching bot name, going to /basic dialog');
