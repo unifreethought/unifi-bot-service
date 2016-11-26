@@ -10,12 +10,14 @@ class UnifiConnectorAzure extends UnifiConnector_1.UnifiConnector {
         const superListen = super.listen(botCtx);
         return (context, req) => {
             botCtx.log = context.log;
+            context.log('Connected to: ', UnifiConnector_1.ConnectionType[this.unifiSettings.connectedTo]);
             switch (this.unifiSettings.connectedTo) {
                 case UnifiConnector_1.ConnectionType.BotService:
                     break;
                 case UnifiConnector_1.ConnectionType.Plivo:
                     // Plivo sends requests querystring formatted in the body.
                     req.body = qs.parse(req.body);
+                    context.log('Plivo request coming in, body: ', req.body);
                     break;
                 default:
                     break;

@@ -13,6 +13,7 @@ export class UnifiConnectorAzure extends UnifiConnector {
     return (context, req) => {
       botCtx.log = context.log;
 
+      context.log('Connected to: ', ConnectionType[this.unifiSettings.connectedTo]);
       switch (this.unifiSettings.connectedTo) {
         case ConnectionType.BotService:
           break;
@@ -20,6 +21,7 @@ export class UnifiConnectorAzure extends UnifiConnector {
         case ConnectionType.Plivo:
           // Plivo sends requests querystring formatted in the body.
           req.body = qs.parse(req.body);
+          context.log('Plivo request coming in, body: ', req.body);
           break;
 
         default:

@@ -28,15 +28,13 @@ const intents = new builder.IntentDialog()
     session.send("Hello! I\"m the UNIFI Bot. Right now my functions are:\n\n"
         + "1. Sending text messages (SMS) to groups of users. e.g.: "
         + "Text members at 3PM \"UNIFI Forum tonight at 6 behind Chat\'s\"!");
-    session.endDialog();
 })
     .matches(/^@unifibot echo/, (session, args) => {
-    const filter = new RegExp(`^@unifibot echo (.*)`);
+    const filter = new RegExp('^@unifibot echo (.*)');
     const matches = session.message.text.match(filter);
     if (matches) {
         session.send(matches[1]);
     }
-    session.endDialog();
 })
     .onDefault((session) => {
     const message = new builder.Message()
@@ -44,6 +42,7 @@ const intents = new builder.IntentDialog()
         .text(session.message.text);
     bot.send(message);
 });
+bot.on('trigger');
 bot.dialog("/", intents);
 if (useEmulator) {
     const server = restify.createServer();
@@ -55,4 +54,10 @@ if (useEmulator) {
 else {
     module.exports = { default: connector.listen() };
 }
+/*
+POST https://unifi-bot-service.azurewebsites.net/api/plivo-in?code=3uy26msc0ipafhy67c1xqyxz0loz7kdn9xx41
+
+To=13192149770&From=13196106722&Text=%40unifibot%20help&Type=sms&MessageUUID=38a67f51-b1f3-11e6-8c60-02daa5941325
+
+*/
 //# sourceMappingURL=index.js.map
