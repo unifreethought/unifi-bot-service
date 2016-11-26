@@ -132,6 +132,10 @@ export class UnifiConnector extends ChatConnector {
         this.handler = handler;
     }
 
+    public log(message?: any, ...optionalParams: any[]): void {
+        this.context.log.apply(this, arguments);
+    }
+
     private handlePlivoRequest(req: IWebRequest, res: IWebResponse): void {
         // In case future authentication code is added, add it here.
 

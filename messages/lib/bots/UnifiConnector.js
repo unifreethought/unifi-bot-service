@@ -106,6 +106,9 @@ class UnifiConnector extends botbuilder_1.ChatConnector {
     onEvent(handler) {
         this.handler = handler;
     }
+    log(message, ...optionalParams) {
+        this.context.log.apply(this, arguments);
+    }
     handlePlivoRequest(req, res) {
         // In case future authentication code is added, add it here.
         // Plivo doesn't use JWT, so we defer authentication to the listener.

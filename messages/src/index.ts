@@ -46,7 +46,7 @@ if (useEmulator) {
   };
 }
 
-function makeBot(connector: builder.IConnector): builder.UniversalBot {
+function makeBot(connector: UnifiConnector): builder.UniversalBot {
   const bot = new builder.UniversalBot(connector, {
     persistConversationData: true,
   });
@@ -61,23 +61,27 @@ function makeBot(connector: builder.IConnector): builder.UniversalBot {
   const filterIntent = new builder.IntentDialog()
     .matches(/.*/, [
       (session) => {
+        connector.log('In filter dialog');
         const botAdr = session.message.address.bot;
         const botName = botAdr.name || botAdr.id || 'unifibot';
         const filter = new RegExp(`^@${botName} (.*)`);
         const matches = session.message.text.match(filter);
         if (matches) {
+          connector.log('Matching bot name, going to /basic dialog');
           session.message.text = matches[1];
           session.replaceDialog('/basic');
         }
       },
     ])
     .onDefault((session) => {
+      connector.log('In filter dialog, ending dialog');
       session.endDialog();
     });
 
   const intents = new builder.IntentDialog()
     .matches(/^help/i, [
       (session) => {
+        connector.log('In help dialog');
         session.send("Hello! I'm the UNIFI Bot. Right now my functions are:\n\n"
           + '1. Sending text messages (SMS) to groups of users. e.g.: '
           + 'Text members at 3PM "UNIFI Forum tonight at 6 behind Chat\'s"!');
@@ -86,15 +90,18 @@ function makeBot(connector: builder.IConnector): builder.UniversalBot {
     ])
     .matches(/^debug address$/i, [
       (session) => {
+        connector.log('In debug address dialog');
         session.send(stringify(session.message.address));
         session.endDialog();
       },
     ])
     .matches(/^echo (.*)/, (session, args) => {
+      connector.log('In echo dialog');
       session.send(args.matched[1]);
       session.endDialog();
     })
     .matches(/.*/, (session) => {
+      connector.log('Going to /luis dialog');
       session.replaceDialog('/luis');
     });
 
@@ -102,6 +109,7 @@ function makeBot(connector: builder.IConnector): builder.UniversalBot {
   const luis = new builder.IntentDialog({ recognizers: [recognizer] })
     .matches('TextGroup', Intents.TextGroup)
     .onDefault((session) => {
+      connector.log('In /luis dialog, did not understand message.');
       session.send('Sorry, I did not understand \'%s\'.', session.message.text);
       session.endDialog();
     });
