@@ -31,7 +31,7 @@ const settings = {
     },
 };
 if (useEmulator) {
-    let context = { log: console.log };
+    let context = { log: console.log, done: () => { } };
     let timer = {};
     let connector = new UnifiConnector_1.UnifiConnector(settings, context);
     let bot = makeBot(context, connector);
@@ -43,7 +43,7 @@ else {
 function main(context, timer) {
     let connector = new UnifiConnector_1.UnifiConnector(settings, context);
     let bot = makeBot(context, connector);
-    const database = new db_1.Database({ log: () => { return; } });
+    const database = new db_1.Database({ log: () => { return; }, done: () => { } });
     let sendToList = (listName, message) => __awaiter(this, void 0, void 0, function* () {
         let title = db.CONSTANTS.SMS_LIST_TABLE_PREFIX + listName;
         let stream = {
@@ -91,7 +91,7 @@ function main(context, timer) {
             });
         }
     });
-    onDb();
+    onDb().then(() => context.done());
 }
 ;
 function makeBot(context, connector) {

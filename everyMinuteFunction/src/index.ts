@@ -35,7 +35,7 @@ const settings = {
 
 
 if (useEmulator) {
-  let context = { log: console.log };
+  let context = { log: console.log, done: () => {} };
   let timer = {};
   let connector = new UnifiConnector(settings, context);
   let bot = makeBot(context, connector);
@@ -48,7 +48,7 @@ function main(context: IContext, timer: ITimer) {
   let connector = new UnifiConnector(settings, context);
   let bot = makeBot(context, connector);
 
-  const database = new Database({ log: () => { return; } });
+  const database = new Database({ log: () => { return; }, done: () => {} });
 
   let sendToList = async (listName, message) => {
     let title = db.CONSTANTS.SMS_LIST_TABLE_PREFIX + listName;
@@ -106,7 +106,7 @@ function main(context: IContext, timer: ITimer) {
     }
   };
 
-  onDb();
+  onDb().then(() => context.done());
 };
 
 function makeBot(context: IContext, connector: UnifiConnector): builder.UniversalBot {
