@@ -110,7 +110,7 @@ export function addIntents(context: IContext, bot: builder.UniversalBot, dialogI
       session.send(`Okay! ${formattedTime} we will send ${target} "${message}"`);
 
       const db = new Database(context);
-      db.scheduleMessage(target, formattedTime, message);
+      db.scheduleMessage(target, textMessage.time.toISOString(), message);
 
       session.endDialog();
     } else {

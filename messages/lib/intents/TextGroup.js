@@ -96,7 +96,7 @@ function addIntents(context, bot, dialogId) {
                 const message = textMessage.message;
                 session.send(`Okay! ${formattedTime} we will send ${target} "${message}"`);
                 const db = new db_1.Database(context);
-                db.scheduleMessage(target, formattedTime, message);
+                db.scheduleMessage(target, textMessage.time.toISOString(), message);
                 session.endDialog();
             }
             else {
