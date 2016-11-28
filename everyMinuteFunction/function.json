@@ -1,0 +1,12 @@
+{
+  "disabled": false,
+  "scriptFile": "index.js",
+  "bindings": [
+    {
+      "schedule": "* * * * *",
+      "name": "timer",
+      "type": "timerTrigger",
+      "direction": "in"
+    }
+  ]
+}
