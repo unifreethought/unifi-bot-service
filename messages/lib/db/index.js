@@ -31,7 +31,7 @@ class Database {
             yield this.promisify0((cb) => doc.useServiceAccountAuth(key, cb));
             let sheet = yield this.getOrCreateSheetAsync(doc, CONSTANTS.SMS_QUEUE_TABLE, CONSTANTS.SMS_QUEUE_HEADERS);
             this.context.log('Loaded sheet', sheet);
-            let row = { target, date, message, sent: false };
+            let row = { target, date, message, sent: "" };
             let result = yield this.promisify1((cb) => sheet.addRow(row, cb));
             this.context.log('Added row ', row, ' with result ', result);
             return result;

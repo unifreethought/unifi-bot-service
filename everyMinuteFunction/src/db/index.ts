@@ -78,7 +78,7 @@ export class Database {
     let sheet = await this.getOrCreateSheetAsync(doc, CONSTANTS.SMS_QUEUE_TABLE, CONSTANTS.SMS_QUEUE_HEADERS);
     this.context.log('Loaded sheet', sheet);
 
-    let row = { target, date, message, sent: false };
+    let row = { target, date, message, sent: "" };
     let result = await this.promisify1((cb) => sheet.addRow(row, cb));
     this.context.log('Added row ', row, ' with result ', result);
 
