@@ -191,10 +191,6 @@ export function channelIdToType(channelId: string): ConnectionType {
     }
 }
 
-export interface IContext {
-    log(message?: any, ...optionalParams: any[]): void;
-}
-
 export interface IPlivoConnectorSettings {
     plivoNumber: string;
     plivoAuthId: string;

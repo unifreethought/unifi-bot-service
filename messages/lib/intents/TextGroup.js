@@ -31,7 +31,7 @@ futureRefiner.refine = (text, results, opt) => {
 const chronoParser = new chrono.Chrono();
 chronoParser.refiners.push(guessPMRefiner);
 chronoParser.refiners.push(futureRefiner);
-function addIntents(bot, dialogId) {
+function addIntents(context, bot, dialogId) {
     bot.dialog(dialogId, [(session, args, next) => {
             const target = builder.EntityRecognizer.findEntity(args.entities, 'TextTarget');
             const timeString = builder.EntityRecognizer.findEntity(args.entities, 'TextScheduledTime');
@@ -95,7 +95,7 @@ function addIntents(bot, dialogId) {
                 const target = textMessage.target;
                 const message = textMessage.message;
                 session.send(`Okay! ${formattedTime} we will send ${target} "${message}"`);
-                const db = new db_1.Database();
+                const db = new db_1.Database(context);
                 db.scheduleMessage(target, formattedTime, message);
                 session.endDialog();
             }

@@ -1,5 +1,7 @@
 import { ConnectionType, UnifiConnector } from './bots/UnifiConnector';
 import { UnifiConnectorAzure } from './bots/UnifiConnectorAzure';
+import { IContext } from './interfaces';
+
 import * as db from './db';
 import * as Intents from './intents';
 
@@ -36,19 +38,19 @@ if (useEmulator) {
 
   let context = { log: console.log };
   let connector = new UnifiConnector(settings, context);
-  let bot = makeBot(connector);
+  let bot = makeBot(context, connector);
 
   server.post('/api/messages', <any> connector.listen());
 } else {
   module.exports = (context, req) => {
     let connector = new UnifiConnectorAzure(settings, context);
-    let bot = makeBot(connector);
+    let bot = makeBot(context, connector);
 
     connector.listenAzure(req);
   };
 }
 
-function makeBot(connector: UnifiConnector): builder.UniversalBot {
+function makeBot(context: IContext, connector: UnifiConnector): builder.UniversalBot {
   const bot = new builder.UniversalBot(connector, {
     persistConversationData: true,
   });
@@ -109,7 +111,7 @@ function makeBot(connector: UnifiConnector): builder.UniversalBot {
 
   const recognizer = new builder.LuisRecognizer(luisModelUrl);
   const luis = new builder.IntentDialog({ recognizers: [recognizer] })
-    .matches('TextGroup', Intents.TextGroup(bot, '/luis/TextGroup'))
+    .matches('TextGroup', Intents.TextGroup(context, bot, '/luis/TextGroup'))
     .onDefault((session) => {
       connector.log('In /luis dialog, did not understand message.');
       session.send('Sorry, I did not understand \'%s\'.', session.message.text);

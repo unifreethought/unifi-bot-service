@@ -1,4 +1,5 @@
 import { Database } from '../db';
+import { IContext } from '../interfaces';
 
 import * as builder from 'botbuilder';
 
@@ -37,7 +38,7 @@ const chronoParser = new chrono.Chrono();
 chronoParser.refiners.push(guessPMRefiner);
 chronoParser.refiners.push(futureRefiner);
 
-export function addIntents(bot: builder.UniversalBot, dialogId: string): string {
+export function addIntents(context: IContext, bot: builder.UniversalBot, dialogId: string): string {
   bot.dialog(dialogId, [(session, args, next) => {
     const target = builder.EntityRecognizer.findEntity(args.entities, 'TextTarget');
     const timeString = builder.EntityRecognizer.findEntity(args.entities, 'TextScheduledTime');
@@ -108,7 +109,7 @@ export function addIntents(bot: builder.UniversalBot, dialogId: string): string 
 
       session.send(`Okay! ${formattedTime} we will send ${target} "${message}"`);
 
-      const db = new Database();
+      const db = new Database(context);
       db.scheduleMessage(target, formattedTime, message);
 
       session.endDialog();
