@@ -1,5 +1,6 @@
 import { ConnectionType, UnifiConnector } from './bots/UnifiConnector';
 import { UnifiConnectorAzure } from './bots/UnifiConnectorAzure';
+import * as db from './db';
 import * as Intents from './intents';
 
 import * as builder from 'botbuilder';
@@ -7,6 +8,8 @@ import * as botbuilderAzure from 'botbuilder-azure';
 
 import * as stringify from 'json-stringify-safe';
 import * as restify from 'restify';
+
+import * as _ from 'lodash';
 
 const useEmulator = (process.env.NODE_ENV === 'development');
 
@@ -91,7 +94,7 @@ function makeBot(connector: UnifiConnector): builder.UniversalBot {
       (session) => {
         connector.log('In debug address dialog');
         session.send(stringify(session.message.address));
-        session.endDialog();
+        // session.endDialog();
       },
     ])
     .matches(/^echo (.*)/, (session, args) => {
@@ -106,7 +109,7 @@ function makeBot(connector: UnifiConnector): builder.UniversalBot {
 
   const recognizer = new builder.LuisRecognizer(luisModelUrl);
   const luis = new builder.IntentDialog({ recognizers: [recognizer] })
-    .matches('TextGroup', Intents.TextGroup)
+    .matches('TextGroup', Intents.TextGroup(bot, '/luis/TextGroup'))
     .onDefault((session) => {
       connector.log('In /luis dialog, did not understand message.');
       session.send('Sorry, I did not understand \'%s\'.', session.message.text);

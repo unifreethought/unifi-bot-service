@@ -79,7 +79,7 @@ function makeBot(connector) {
         (session) => {
             connector.log('In debug address dialog');
             session.send(stringify(session.message.address));
-            session.endDialog();
+            // session.endDialog();
         },
     ])
         .matches(/^echo (.*)/, (session, args) => {
@@ -93,7 +93,7 @@ function makeBot(connector) {
     });
     const recognizer = new builder.LuisRecognizer(luisModelUrl);
     const luis = new builder.IntentDialog({ recognizers: [recognizer] })
-        .matches('TextGroup', Intents.TextGroup)
+        .matches('TextGroup', Intents.TextGroup(bot, '/luis/TextGroup'))
         .onDefault((session) => {
         connector.log('In /luis dialog, did not understand message.');
         session.send('Sorry, I did not understand \'%s\'.', session.message.text);

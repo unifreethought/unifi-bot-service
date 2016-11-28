@@ -1,1 +1,1 @@
-export { intents as TextGroup } from './TextGroup';
+export { addIntents as TextGroup } from './TextGroup';

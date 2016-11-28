@@ -1,11 +1,12 @@
 {
   "compilerOptions": {
-    "target": "es2015",
+    "target": "es6",
     "module": "commonjs",
     "sourceMap": true,
     "outDir": "lib",
     "allowJs": true,
-    "watch": true
+    "watch": true,
+    "pretty": true
   },
   "compileOnSave": true,
   "exclude": [

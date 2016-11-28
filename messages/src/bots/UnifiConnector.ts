@@ -9,6 +9,8 @@ import * as _ from 'lodash';
 const PlivoChannelId: string = 'sms';
 
 export interface IContext {
+    done?: any;
+    res?: any;
     log(message?: any, ...optionalParams: any[]): void;
 }
 

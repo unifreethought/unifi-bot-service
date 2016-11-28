@@ -1,6 +1,5 @@
 {
   "globalDependencies": {
-    "async": "registry:dt/async#2.0.1+20161110083428",
     "form-data": "registry:dt/form-data#0.0.0+20160724024111",
     "node": "registry:dt/node#6.0.0+20161110151007",
     "qs": "registry:dt/qs#6.2.0+20160707010053",
