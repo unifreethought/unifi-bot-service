@@ -4,23 +4,7 @@
   "description": "",
   "main": "index.js",
   "dependencies": {
-    "botbuilder": "^3.4.4",
-    "botbuilder-azure": "0.0.1",
-    "events": "^1.1.1",
-    "json-stringify-safe": "^5.0.1",
-    "lodash": "^4.17.2",
-    "qs": "^6.3.0",
-    "restify": "^4.3.0"
-  },
-  "devDependencies": {
-    "@types/lodash": "^4.14.40",
-    "eslint": "^3.10.2",
-    "eslint-config-airbnb": "^13.0.0",
-    "eslint-plugin-import": "^2.2.0",
-    "eslint-plugin-jsx-a11y": "^3.0.1",
-    "eslint-plugin-react": "^6.7.1",
-    "tslint": "^4.0.2",
-    "typescript": "^2.2.0-dev.20161123"
+    "unifi-bot-service-shared": "file:../.shared/svc"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

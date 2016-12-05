@@ -1,2 +1,2 @@
 "use strict";
-module.exports = require("./lib/index.js");
+module.exports = require('unifi-bot-service-shared/lib/functions/plivo-in');

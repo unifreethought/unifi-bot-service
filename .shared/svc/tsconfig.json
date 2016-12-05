@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "target": "es6",
+    "module": "commonjs",
+    "sourceMap": true,
+    "outDir": "lib",
+    "watch": true,
+    "pretty": true,
+    "declaration": true
+  },
+  "typeAcquisition": {
+    "enable": true
+  },
+  "compileOnSave": true,
+  "exclude": [
+    "node_modules",
+    "lib"
+  ],
+  "include": [
+    "src"
+  ]
+}
