@@ -5,3 +5,4 @@ node_modules/
 
 # .vscode launch files could contain API keys.
 **/.vscode/launch.json
+.env
